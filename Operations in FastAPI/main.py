@@ -1,10 +1,23 @@
 from fastapi import FastAPI
+from database import session, engine
 from model import Product
+import database_models
+
 app = FastAPI()
+
+database_models.Base.metadata.create_all(bind = engine)
 
 @app.get("/")
 def greet():
     return "Yokoso watashino master wayne"
+
+
+def init_db():
+    db = session()
+
+    for product in products:
+        db.add(database_models.Product(**product.model_dump))
+init_db()
 
 products = [
     Product(id = 1, name="gba",description= "budget one", price=79, quantity=10),
@@ -14,6 +27,8 @@ products = [
 
 @app.get("/products")
 def get_all():
+    db = session
+
     return products   # in url use /products after localhost link
 
 
